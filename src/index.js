@@ -74,6 +74,30 @@ async function run() {
       res.send(result);
     });
 
+    // update instructor class
+    app.put("/myclasses/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const value = req.body;
+      const options = { upsert: true };
+      const updateValue = {
+        $set: {
+          name: value.name,
+          email: value.email,
+          instructorName: value.instructorName,
+          image: value.image,
+          availableSeats: value.availableSeats,
+          price: value.price,
+        },
+      };
+      const result = await classCollection.updateOne(
+        filter,
+        updateValue,
+        options
+      );
+      res.send(result);
+    });
+
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
