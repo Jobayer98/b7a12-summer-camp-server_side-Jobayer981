@@ -38,7 +38,26 @@ async function run() {
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
 
-   
+    app.get("/instructors", async (req, res) => {
+      const result = await instructorCollection.find().toArray();
+
+      if (result.length < 1) {
+        return res.status(404).send();
+      }
+
+      res.send(result);
+    });
+
+    // all course route
+    app.get("/classes", async (req, res) => {
+      const result = await classCollection.find().toArray();
+
+      if (result.length < 1) {
+        return res.status(404).send();
+      }
+
+      res.send(result);
+    });
 
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
