@@ -156,7 +156,6 @@ async function run() {
 
     app.post("/cart", async (req, res) => {
       const data = req.body;
-      // console.log(data);
       const result = await cartCollection.insertOne(data);
 
       res.send(result);
@@ -223,10 +222,7 @@ async function run() {
     });
 
     app.get("/users", async (req, res) => {
-      const email = req.query.email;
-      const query = { email: email };
-
-      const result = await userCollection.findOne(query);
+      const result = await userCollection.find().toArray();
 
       res.send(result);
     });
