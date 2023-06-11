@@ -92,7 +92,7 @@ async function run() {
 
     // instructor classes
     app.get("/myclasses", async (req, res) => {
-      const query = req.query;
+      const query = req.query.email;
       const result = await courseCollection.find(query).toArray();
 
       res.send(result);
@@ -214,7 +214,7 @@ async function run() {
       const query = { email: user.email };
       const isExist = await userCollection.findOne(query);
 
-      if (!isExist) {
+      if (isExist) {
         return res.send({ message: "user already exist" });
       }
 
