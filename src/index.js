@@ -10,8 +10,8 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@cluster0.jk7pgvw.mongodb.net/?retryWrites=true&w=majority`;
-// const uri = "mongodb://127.0.0.1:27017";
+// const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@cluster0.jk7pgvw.mongodb.net/?retryWrites=true&w=majority`;
+const uri = "mongodb://127.0.0.1:27017";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -26,7 +26,7 @@ const classCollection = client.db("globalSpeak").collection("classes");
 const cartCollection = client.db("globalSpeak").collection("carts");
 const paymentsCollection = client.db("globalSpeak").collection("payments");
 const instructorCollection = client.db("globalSpeak").collection("instructors");
-const adminCollection = client.db("globalSpeak").collection("admins");
+const userCollection = client.db("globalSpeak").collection("users");
 
 async function run() {
   try {
@@ -39,13 +39,43 @@ async function run() {
     );
 
     // all course route
-    app.get("/classes", async (req, res) => {
+    app.get("/allcourses", async (req, res) => {
+      const query = { status: "approved" };
+      const result = await classCollection.find(query).toArray();
+
+      if (result.length < 1) {
+        return res.status(404).send();
+      }
+
+      res.send(result);
+    });
+    // all course route
+    app.get("/courses", async (req, res) => {
       const result = await classCollection.find().toArray();
 
       if (result.length < 1) {
         return res.status(404).send();
       }
 
+      res.send(result);
+    });
+
+    app.patch("/classes/:id", async (req, res) => {
+      const id = req.params.id;
+      const status = req.query.status;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          status: status,
+        },
+      };
+
+      const result = await classCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
       res.send(result);
     });
 
@@ -174,6 +204,23 @@ async function run() {
     app.get("/payments", async (req, res) => {
       const data = req.body;
       const result = await paymentsCollection.insertOne(data);
+
+      res.send(result);
+    });
+
+    // users route
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+
+      res.send(result);
+    });
+
+    app.get("/users", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+
+      const result = await userCollection.findOne(query);
 
       res.send(result);
     });
