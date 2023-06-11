@@ -38,8 +38,9 @@ async function run() {
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
 
-    app.get("/instructors", async (req, res) => {
-      const result = await instructorCollection.find().toArray();
+    // all course route
+    app.get("/classes", async (req, res) => {
+      const result = await classCollection.find().toArray();
 
       if (result.length < 1) {
         return res.status(404).send();
@@ -48,9 +49,9 @@ async function run() {
       res.send(result);
     });
 
-    // all course route
-    app.get("/classes", async (req, res) => {
-      const result = await classCollection.find().toArray();
+    // instructor routes
+    app.get("/instructors", async (req, res) => {
+      const result = await instructorCollection.find().toArray();
 
       if (result.length < 1) {
         return res.status(404).send();
@@ -95,6 +96,14 @@ async function run() {
         updateValue,
         options
       );
+      res.send(result);
+    });
+
+    app.post("/add-class", async (req, res) => {
+      const query = req.body;
+      query.status = "pending";
+      const result = await classCollection.insertOne(query);
+
       res.send(result);
     });
 
