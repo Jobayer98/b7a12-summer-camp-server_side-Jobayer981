@@ -60,7 +60,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/classes/:id", async (req, res) => {
+    app.patch("/courses/:id", async (req, res) => {
       const id = req.params.id;
       const status = req.query.status;
       const filter = { _id: new ObjectId(id) };
@@ -211,8 +211,14 @@ async function run() {
     // users route
     app.post("/users", async (req, res) => {
       const user = req.body;
-      const result = await userCollection.insertOne(user);
+      const query = { email: user.email };
+      const isExist = await userCollection.findOne(query);
 
+      if (!isExist) {
+        return res.send({ message: "user already exist" });
+      }
+
+      const result = await userCollection.insertOne(user);
       res.send(result);
     });
 
