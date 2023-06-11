@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const uri = process.env.DB_URI;
+const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@cluster0.jk7pgvw.mongodb.net/?retryWrites=true&w=majority`;
 // const uri = "mongodb://127.0.0.1:27017";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
