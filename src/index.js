@@ -141,6 +141,43 @@ async function run() {
       res.send(result);
     });
 
+    // payments route
+    // create payment intent
+    app.post("/create-payment-intent", async (req, res) => {
+      const { price } = req.body;
+      const amount = parseInt(price) * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+    });
+
+    app.post("/payments", async (req, res) => {
+      const data = req.body;
+      const result = await paymentsCollection.insertOne(data);
+
+      const query = {
+        _id: { $in: data.cartItems.map((id) => new ObjectId(id)) },
+      };
+      console.log(query);
+      const deleteResult = await cartCollection.deleteMany(query);
+
+      res.send({ result, deleteResult });
+    });
+    app.get("/payments", async (req, res) => {
+      const data = req.body;
+      const result = await paymentsCollection.insertOne(data);
+
+      res.send(result);
+    });
+
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
