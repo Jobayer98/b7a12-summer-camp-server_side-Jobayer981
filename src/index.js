@@ -10,8 +10,8 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@cluster0.jk7pgvw.mongodb.net/?retryWrites=true&w=majority`;
-const uri = "mongodb://127.0.0.1:27017";
+const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@cluster0.jk7pgvw.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = "mongodb://127.0.0.1:27017";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -22,7 +22,7 @@ const client = new MongoClient(uri, {
   },
 });
 
-const classCollection = client.db("globalSpeak").collection("classes");
+const courseCollection = client.db("globalSpeak").collection("courses");
 const cartCollection = client.db("globalSpeak").collection("carts");
 const paymentsCollection = client.db("globalSpeak").collection("payments");
 const instructorCollection = client.db("globalSpeak").collection("instructors");
@@ -41,7 +41,7 @@ async function run() {
     // all course route
     app.get("/allcourses", async (req, res) => {
       const query = { status: "approved" };
-      const result = await classCollection.find(query).toArray();
+      const result = await courseCollection.find(query).toArray();
 
       if (result.length < 1) {
         return res.status(404).send();
@@ -51,7 +51,7 @@ async function run() {
     });
     // all course route
     app.get("/courses", async (req, res) => {
-      const result = await classCollection.find().toArray();
+      const result = await courseCollection.find().toArray();
 
       if (result.length < 1) {
         return res.status(404).send();
@@ -71,7 +71,7 @@ async function run() {
         },
       };
 
-      const result = await classCollection.updateOne(
+      const result = await courseCollection.updateOne(
         filter,
         updateDoc,
         options
@@ -93,7 +93,7 @@ async function run() {
     // instructor classes
     app.get("/myclasses", async (req, res) => {
       const query = req.query;
-      const result = await classCollection.find(query).toArray();
+      const result = await courseCollection.find(query).toArray();
 
       res.send(result);
     });
@@ -101,7 +101,7 @@ async function run() {
     app.get("/myclasses/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await classCollection.findOne(query);
+      const result = await courseCollection.findOne(query);
       res.send(result);
     });
 
@@ -121,7 +121,7 @@ async function run() {
           price: value.price,
         },
       };
-      const result = await classCollection.updateOne(
+      const result = await courseCollection.updateOne(
         filter,
         updateValue,
         options
@@ -132,7 +132,7 @@ async function run() {
     app.post("/add-class", async (req, res) => {
       const query = req.body;
       query.status = "pending";
-      const result = await classCollection.insertOne(query);
+      const result = await courseCollection.insertOne(query);
 
       res.send(result);
     });
