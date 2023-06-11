@@ -59,6 +59,21 @@ async function run() {
       res.send(result);
     });
 
+    // instructor classes
+    app.get("/myclasses", async (req, res) => {
+      const query = req.query;
+      const result = await classCollection.find(query).toArray();
+
+      res.send(result);
+    });
+
+    app.get("/myclasses/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await classCollection.findOne(query);
+      res.send(result);
+    });
+
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
