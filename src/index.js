@@ -210,6 +210,7 @@ async function run() {
     // users route
     app.post("/users", async (req, res) => {
       const user = req.body;
+      user.role = "student";
       const query = { email: user.email };
       const isExist = await userCollection.findOne(query);
 
@@ -222,7 +223,25 @@ async function run() {
     });
 
     app.get("/users", async (req, res) => {
-      const result = await userCollection.find().toArray();
+      const query = req.query;
+      console.log(query);
+      const result = await userCollection.find(query).toArray();
+
+      res.send(result);
+    });
+
+    app.patch("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const role = req.query.role;
+
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          role: role,
+        },
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
 
       res.send(result);
     });
