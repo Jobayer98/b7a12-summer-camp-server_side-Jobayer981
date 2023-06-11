@@ -107,6 +107,40 @@ async function run() {
       res.send(result);
     });
 
+    // cart routes
+    app.get("/cart", async (req, res) => {
+      const email = req.query.email;
+
+      const filter = { email: email };
+
+      if (!email) {
+        return res.status(400).send();
+      }
+      const result = await cartCollection.find(filter).toArray();
+
+      if (result.length < 1) {
+        return res.status(404).send();
+      }
+      res.send(result);
+    });
+
+    app.post("/cart", async (req, res) => {
+      const data = req.body;
+      // console.log(data);
+      const result = await cartCollection.insertOne(data);
+
+      res.send(result);
+    });
+
+    app.delete("/cart/:id", async (req, res) => {
+      const id = req.params.id;
+
+      const query = { _id: new ObjectId(id) };
+      const result = await cartCollection.deleteOne(query);
+
+      res.send(result);
+    });
+
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
