@@ -201,9 +201,19 @@ async function run() {
       res.send({ result, deleteResult });
     });
 
-    app.get("/payments", async (req, res) => {
-      const data = req.body;
-      const result = await paymentsCollection.insertOne(data);
+    app.get("/payments-history", async (req, res) => {
+      const query = req.query;
+      const options = {
+        sort: { date: -1 },
+        projection: {
+          _id: 1,
+          transactionId: 1,
+          price: 1,
+          quantity: 1,
+          date: 1,
+        },
+      };
+      const result = await paymentsCollection.find(query, options).toArray();
 
       res.send(result);
     });
