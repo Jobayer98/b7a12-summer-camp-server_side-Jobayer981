@@ -92,7 +92,7 @@ async function run() {
 
     // instructor classes
     app.get("/myclasses", async (req, res) => {
-      const query = req.query.email;
+      const query = req.query;
       const result = await courseCollection.find(query).toArray();
 
       res.send(result);
@@ -200,6 +200,7 @@ async function run() {
 
       res.send({ result, deleteResult });
     });
+
     app.get("/payments", async (req, res) => {
       const data = req.body;
       const result = await paymentsCollection.insertOne(data);
@@ -254,4 +255,4 @@ async function run() {
     // await client.close();
   }
 }
-run().catch(console.dir);
+run();
